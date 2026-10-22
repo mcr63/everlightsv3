@@ -1,5 +1,12 @@
 # Everlights v3 for Home Assistant
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/everlights-dark.png">
+    <img src="assets/everlights-light.png" alt="Everlights v3" width="300">
+  </picture>
+</p>
+
 Home Assistant integration for Everlights v3 permanent holiday lights.
 
 **Note: This will override the existing everlights domain.  DO NOT USE if you use the older version from the core components.**
