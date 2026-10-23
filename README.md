@@ -9,6 +9,8 @@
 
 Home Assistant integration for Everlights v3 permanent holiday lights.
 
+It talks to your Everlights bridge on the local network (no cloud). Each zone becomes a device with a light entity (colour and effect control) and diagnostic sensors for signal strength and the last request and response timestamps. The bridge is polled every 30 seconds.
+
 **Note: This will override the existing everlights domain.  DO NOT USE if you use the older version from the core components.**
 
 # Installation
@@ -51,5 +53,15 @@ If you are developing locally and publishing through GitHub Releases:
 2. Run `./scripts/release.sh [patch|minor|major] ["commit message"]`.
 3. If push fails due network/session issues, run `./scripts/push-release.sh [tag]`.
 4. Create the GitHub Release from the pushed tag.
+
+# Actions
+
+This integration does not provide any actions. Control devices through the entities it creates (for example with the standard `switch`, `light`, `select` or `climate` actions).
+
+# Removing the integration
+
+1. Go to **Settings** → **Devices & services**, open **Everlights v3**, click the three-dot menu (⋮) next to the entry and choose **Delete**. The Everlights bridge entry, its devices and its entities are removed.
+2. If you installed through HACS, open **HACS**, find **Everlights v3**, click the three-dot menu (⋮) and choose **Remove**. For a manual install, delete the **custom_components/everlights** folder instead.
+3. Restart Home Assistant.
 
 ---

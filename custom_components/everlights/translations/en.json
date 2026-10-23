@@ -17,13 +17,13 @@
       }
     },
     "abort": {
-      "already_configured": "Device is already configured",
+      "already_configured": "This bridge is already configured.",
       "reconfigure_successful": "Bridge settings updated successfully."
     },
     "error": {
-      "auth": "Username/Password is wrong.",
-      "connection": "Unable to connect to the server.",
-      "unknown": "Unknown error occurred."
+      "invalid_auth": "The bridge rejected the request.",
+      "cannot_connect": "Unable to connect to the bridge.",
+      "unknown": "Unexpected error."
     }
   }
 }

@@ -14,7 +14,10 @@ from homeassistant.components.light import (
 )
 
 from .const import DOMAIN, LOGGER
-from .coordinator import EverlightsDataUpdateCoordinator
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from .coordinator import EverlightsConfigEntry, EverlightsDataUpdateCoordinator
 from .entity import EverlightsEntity
 
 ENTITY_DESCRIPTIONS = (
@@ -26,10 +29,14 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: EverlightsConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
     """Set up the sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices(
+    coordinator = entry.runtime_data
+    async_add_entities(
         EverlightsLight(
             coordinator=coordinator,
             entity_description=entity_description,
@@ -55,9 +62,6 @@ class EverlightsLight(EverlightsEntity, LightEntity):
     ) -> None:
         """Initialize the light class."""
         super().__init__(coordinator, entity_description, serial)
-        self.entity_description = entity_description
-        self.serial = serial
-        self._name = f'{serial} {entity_description.name}'
         self._sequence_by_alias: dict[str, dict[str, Any]] = {
             sequence["alias"]: sequence
             for sequence in coordinator.client.sequences
@@ -65,11 +69,6 @@ class EverlightsLight(EverlightsEntity, LightEntity):
         }
         self._attr_effect_list = list(self._sequence_by_alias)
         self._attr_effect_list.sort()
-
-    @property
-    def name(self) -> str:
-        return self._name
-
 
     @property
     def is_on(self) -> bool:

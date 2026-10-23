@@ -7,8 +7,11 @@ from typing import Any
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription, SensorDeviceClass
 from homeassistant.const import EntityCategory
 
-from .const import DOMAIN, LOGGER
-from .coordinator import EverlightsDataUpdateCoordinator
+from .const import LOGGER
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from .coordinator import EverlightsConfigEntry, EverlightsDataUpdateCoordinator
 from .entity import EverlightsEntity
 
 ENTITY_DESCRIPTIONS = (
@@ -45,10 +48,14 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: EverlightsConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
     """Set up the sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices(
+    coordinator = entry.runtime_data
+    async_add_entities(
         EverlightsSensor(
             coordinator=coordinator,
             entity_description=entity_description,
@@ -70,13 +77,6 @@ class EverlightsSensor(EverlightsEntity, SensorEntity):
     ) -> None:
         """Initialize the sensor class."""
         super().__init__(coordinator,entity_description,serial)
-        self.entity_description = entity_description
-        self._name = f'{serial} {entity_description.name}'
-        self.serial = serial
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     @property
     def native_value(self) -> Any:

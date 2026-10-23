@@ -8,7 +8,6 @@ import time
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from .const import LOGGER
 
@@ -148,7 +147,7 @@ class EverlightsApiClient:
     ) -> Any:
         """Get information from the API."""
         try:
-            async with async_timeout.timeout(10):
+            async with asyncio.timeout(10):
                 async with self._session.request(
                     method=method,
                     url=url,
