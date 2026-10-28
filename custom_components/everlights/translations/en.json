@@ -25,5 +25,21 @@
       "cannot_connect": "Unable to connect to the bridge.",
       "unknown": "Unexpected error."
     }
+  },
+  "services": {
+    "set_pattern": {
+      "name": "Set pattern",
+      "description": "Send a custom color pattern and effects to an EverLights zone.",
+      "fields": {
+        "colors": {
+          "name": "Colors",
+          "description": "List of hex strings or [r, g, b] values, repeated along the run."
+        },
+        "effects": {
+          "name": "Effects",
+          "description": "List of {type, speed}. Types: fade, blink, strobe, chase, reverseChase, wipe, random, twinkle, lightning. Speed 0-255."
+        }
+      }
+    }
   }
 }

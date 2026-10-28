@@ -4,21 +4,27 @@ from __future__ import annotations
 from typing import Any
 
 import homeassistant.util.color as color_util
+import voluptuous as vol
 from homeassistant.components.light import (
-    LightEntity,
-    LightEntityDescription,
-    LightEntityFeature,
     ATTR_EFFECT,
     ATTR_HS_COLOR,
     ColorMode,
+    LightEntity,
+    LightEntityDescription,
+    LightEntityFeature,
 )
-
-from .const import DOMAIN, LOGGER
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ServiceValidationError
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .const import DOMAIN, LOGGER
 from .coordinator import EverlightsConfigEntry, EverlightsDataUpdateCoordinator
 from .entity import EverlightsEntity
+from .pattern import build_sequence
+
+SERVICE_SET_PATTERN = "set_pattern"
 
 ENTITY_DESCRIPTIONS = (
     LightEntityDescription(
@@ -44,6 +50,27 @@ async def async_setup_entry(
         )
         for entity_description in ENTITY_DESCRIPTIONS
         for serial in coordinator.data
+    )
+    platform = entity_platform.async_get_current_platform()
+    platform.async_register_entity_service(
+        SERVICE_SET_PATTERN,
+        {
+            vol.Required("colors"): vol.All(cv.ensure_list, vol.Length(min=1)),
+            vol.Optional("effects", default=[]): vol.All(
+                cv.ensure_list,
+                [
+                    vol.Schema(
+                        {
+                            vol.Required("type"): cv.string,
+                            vol.Optional("speed", default=50): vol.All(
+                                vol.Coerce(int), vol.Range(min=0, max=255)
+                            ),
+                        }
+                    )
+                ],
+            ),
+        },
+        "async_set_pattern",
     )
 
 
@@ -120,5 +147,17 @@ class EverlightsLight(EverlightsEntity, LightEntity):
         self._attr_hs_color = None
         self._attr_rgb_color = None
         self._attr_brightness = None
+        self._attr_effect = None
+        await self.coordinator.async_request_refresh()
+
+    async def async_set_pattern(
+        self, colors: list[Any], effects: list[dict[str, Any]] | None = None
+    ) -> None:
+        """Send an arbitrary pattern/effects sequence to this zone."""
+        try:
+            sequence = build_sequence(colors, effects)
+        except ValueError as err:
+            raise ServiceValidationError(str(err)) from err
+        await self.coordinator.client.async_set_sequence(self.serial, sequence)
         self._attr_effect = None
         await self.coordinator.async_request_refresh()
