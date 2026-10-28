@@ -1,67 +1,107 @@
-# Everlights v3 for Home Assistant
+# EverLights v3 (Local)
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/everlights-dark.png">
-    <img src="assets/everlights-light.png" alt="Everlights v3" width="300">
-  </picture>
-</p>
+A HACS-installable Home Assistant integration for EverLights v3 bridges. All control happens locally over HTTP on port 80; no cloud connection is needed. It can coexist with integrations using the old `everlights` domain because its domain is `everlights_v3`.
 
-Home Assistant integration for Everlights v3 permanent holiday lights.
+Features include RGB zone lights, brightness, all 13 effects, bridge presets, a visual pattern editor, zone playlists, diagnostic entities, and automatic bridge clock synchronization.
 
-It talks to your Everlights bridge on the local network (no cloud). Each zone becomes a device with a light entity (colour and effect control) and diagnostic sensors for signal strength and the last request and response timestamps. The bridge is polled every 30 seconds.
+## Install with HACS
 
-**Note: This will override the existing everlights domain.  DO NOT USE if you use the older version from the core components.**
+HACS > ⋮ > Custom repositories > enter `https://github.com/mcr63/everlightsv3` > category **Integration** > download > restart Home Assistant > Settings > Devices & services > Add integration > **EverLights v3 (Local)** > enter your bridge IP (for example `192.168.x.x`).
 
-# Installation
+Requires Home Assistant 2024.10.0 or later. For manual installation, copy `custom_components/everlights_v3` into your Home Assistant `custom_components` directory, restart, and add the integration through Devices & services.
 
-There are two main ways to install this custom component within your Home Assistant instance:
+## Options and entities
 
-1. Using HACS (see https://hacs.xyz/ for installation instructions if you do not already have it installed):
+Each bridge has options for polling interval (10 seconds by default, range 5–300), clock synchronization (enabled), and sidebar panel (enabled). Changing options reloads the integration.
 
-   1. From within Home Assistant, click on the link to **HACS**
-   2. Click the three-dot menu (⋮) in the top right corner and select **Custom repositories**
-   3. Enter the URL for this repository in the section that says _Add custom repository URL_ and select **Integration** in the _Category_ dropdown list
-   4. Click the **ADD** button
-   5. Close the _Custom repositories_ window
-   6. Search for **Everlights v3** in HACS and select it from the results (HACS uses a single unified search/filter list rather than separate category tabs)
-   7. Click to download/install it, and proceed with any on-screen instructions
-   8. Restart your Home Assistant instance and then proceed to the _Configuration_ section below.
+Each zone has an RGB light and a Playlist switch. Lights expose current pattern, effects, and alias as attributes. Zone diagnostics include RSSI, SNR, and reboot count. Bridge diagnostics include reboot count, cloud outage duration, firmware, and Cloud reachable. Noisy diagnostic entities start disabled; enable them in the entity settings if needed.
 
-2. Manual Installation:
-   1. Download or clone this repository
-   2. Copy the contents of the folder **custom_components/everlights** into the same file structure on your Home Assistant instance
-      - An easy way to do this is using the [Samba add-on](https://www.home-assistant.io/getting-started/configuration/#editing-configuration-via-sambawindows-networking), but feel free to do so however you want
-   3. Restart your Home Assistant instance and then proceed to the _Configuration_ section below.
+The bridge updates active state a few seconds after a command. The integration requests a refresh after five seconds. Brightness scales pattern RGB channels; the bridge has no separate brightness field. An unscaled pattern is kept in memory and restored across Home Assistant restarts to avoid rounding loss when changing brightness repeatedly. Plain turn-on restores the previous pattern, or starts with warm white `FF9A3C`.
 
-While the manual installation above seems like less steps, it's important to note that you will not be able to see updates to this custom component unless you are subscribed to the watch list. You will then have to repeat each step in the process. By using HACS, you'll be able to see that an update is available and easily update the custom component.
+## Services
 
-# Configuration
+Services target zone light entities, except `set_time`, which addresses all bridges or an optional `config_entry_id`. Presets belong to the targeted light's bridge. Names matching an existing user preset update it. Factory presets can be played but cannot be deleted.
 
-There is a config flow for this integration. After installing the custom component:
+```yaml
+action: everlights_v3.set_pattern
+target:
+  entity_id: light.front_lights
+data:
+  colors: ["#FF9A3C", [255, 30, 0]]
+  effects:
+    - type: fade
+      value: 128
+    - type: chase
+      value: 90
+  brightness: 200
+  alias: Evening
+```
 
-1. Go to **Settings** → **Devices & services**
-2. Click **+ Add integration** (bottom right) to set up a new integration
-3. Search for **Everlights v3** and click on it
-4. You will be guided through the rest of the setup process via the config flow
+```yaml
+action: everlights_v3.save_preset
+target:
+  entity_id: light.front_lights
+data:
+  name: Evening
+  colors: ["FF9A3C", "FF2200"]
+  effects:
+    - type: twinkle
+      value: 100
+```
 
-# Development Releases
+```yaml
+action: everlights_v3.play_preset
+target:
+  entity_id: light.front_lights
+data:
+  preset: Evening # alias or preset ID
+```
 
-If you are developing locally and publishing through GitHub Releases:
+```yaml
+action: everlights_v3.delete_preset
+target:
+  entity_id: light.front_lights
+data:
+  preset: Evening
+```
 
-1. Finalize code changes.
-2. Run `./scripts/release.sh [patch|minor|major] ["commit message"]`.
-3. If push fails due network/session issues, run `./scripts/push-release.sh [tag]`.
-4. Create the GitHub Release from the pushed tag.
+```yaml
+action: everlights_v3.start_playlist
+target:
+  entity_id: light.front_lights
+data:
+  presets: [Evening, Sunset]
+  interval: 60 # seconds, 5–86400
+  shuffle: false
+```
 
-# Actions
+```yaml
+action: everlights_v3.stop_playlist
+target:
+  entity_id: light.front_lights
+```
 
-This integration does not provide any actions. Control devices through the entities it creates (for example with the standard `switch`, `light`, `select` or `climate` actions).
+```yaml
+action: everlights_v3.set_time
+data: {} # optionally config_entry_id: your entry ID
+```
 
-# Removing the integration
+Manual pattern changes, preset playback, and turning a light off stop its playlist. The Playlist switch resumes the last list during the current integration session. Playlists stop when the integration unloads; they are not bridge schedules and require Home Assistant to remain running.
 
-1. Go to **Settings** → **Devices & services**, open **Everlights v3**, click the three-dot menu (⋮) next to the entry and choose **Delete**. The Everlights bridge entry, its devices and its entities are removed.
-2. If you installed through HACS, open **HACS**, find **Everlights v3**, click the three-dot menu (⋮) and choose **Remove**. For a manual install, delete the **custom_components/everlights** folder instead.
-3. Restart Home Assistant.
+## Effects and panel
 
----
+Modifiers `fade`, `blink`, `strobe`, and `lightning` stack. Motion effects are `bars`, `gradient`, `random`, `wipe`, `melt`, `twinkle`, `chase`, `reverseChase`, and `pingPong`. One motion effect is recommended, although the bridge accepts multiple. Effect values range from 0–255 and are clamped by the integration. Blue LEDs are bright: warm whites should use less blue.
+
+The **EverLights** sidebar panel is available to administrators. Pick a zone, edit colors and multiple effects, view animated approximations, adjust brightness, send a pattern, and save or play bridge presets. Add gallery patterns to a playlist and start or stop it from the panel. Previews approximate the hardware effects.
+
+You can block the bridge's internet access in your router and keep full local control. The integration keeps the bridge clock in sync at setup and every six hours, unless disabled in options.
+
+## Development
+
+Run `python tools/panel/build.py` to build the standalone panel preview from the shipped JavaScript. Run `python tools/panel/test_preview.py` when Playwright and its Chromium browser are installed. Run `python -m pytest` for helper and integration tests; HA tests use `pytest-homeassistant-custom-component` and mocked HTTP responses.
+
+## Credits
+
+Based on the original integration by [theOrakle/everlightsv3](https://github.com/theOrakle/everlightsv3), from which this repository was forked. API research and ideas: [CWSpear/everlights](https://github.com/CWSpear/everlights), [weswitt/everlights3](https://github.com/weswitt/everlights3), and [martin-robert-fink/savant-everlights](https://github.com/martin-robert-fink/savant-everlights).
+
+MIT licensed. Not affiliated with EverLights.

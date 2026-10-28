@@ -24,7 +24,7 @@ This repository uses this release flow:
 
 ## Rules
 
-- Keep version source of truth in `custom_components/everlights/manifest.json`.
+- Keep version source of truth in `custom_components/everlights_v3/manifest.json`.
 - Use semantic version bumps (`major`, `minor`, `patch`), default `patch`.
 - Do not include generated files in commits (`__pycache__/`, `*.pyc`).
 - Do not amend release commits unless explicitly requested.

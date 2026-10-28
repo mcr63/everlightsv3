@@ -1,0 +1,128 @@
+{
+  "title": "EverLights v3 (Local)",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to your bridge",
+        "description": "Enter the bridge host or IP address.",
+        "data": {
+          "host": "Host"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the bridge.",
+      "unknown": "Unexpected bridge response."
+    },
+    "abort": {
+      "already_configured": "This bridge is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Bridge options",
+        "data": {
+          "scan_interval": "Polling interval (seconds)",
+          "clock_sync": "Synchronize bridge clock",
+          "show_panel": "Show sidebar panel"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_pattern": {
+      "name": "Set pattern",
+      "description": "Send colors and stacked effects to a zone.",
+      "fields": {
+        "colors": {
+          "name": "Colors",
+          "description": "Colors."
+        },
+        "effects": {
+          "name": "Effects",
+          "description": "Effects."
+        },
+        "brightness": {
+          "name": "Brightness",
+          "description": "Brightness."
+        },
+        "alias": {
+          "name": "Alias",
+          "description": "Alias."
+        }
+      }
+    },
+    "play_preset": {
+      "name": "Play preset",
+      "description": "Play a saved preset by alias or ID.",
+      "fields": {
+        "preset": {
+          "name": "Preset",
+          "description": "Preset."
+        }
+      }
+    },
+    "save_preset": {
+      "name": "Save preset",
+      "description": "Create or update a named preset on the selected bridge.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "Name."
+        },
+        "colors": {
+          "name": "Colors",
+          "description": "Colors."
+        },
+        "effects": {
+          "name": "Effects",
+          "description": "Effects."
+        }
+      }
+    },
+    "delete_preset": {
+      "name": "Delete preset",
+      "description": "Delete a user preset from the selected bridge.",
+      "fields": {
+        "preset": {
+          "name": "Preset",
+          "description": "Preset."
+        }
+      }
+    },
+    "start_playlist": {
+      "name": "Start playlist",
+      "description": "Play presets in order or shuffle.",
+      "fields": {
+        "presets": {
+          "name": "Presets",
+          "description": "Presets."
+        },
+        "interval": {
+          "name": "Interval",
+          "description": "Interval."
+        },
+        "shuffle": {
+          "name": "Shuffle",
+          "description": "Shuffle."
+        }
+      }
+    },
+    "stop_playlist": {
+      "name": "Stop playlist",
+      "description": "Stop playback on a zone.",
+      "fields": {}
+    },
+    "set_time": {
+      "name": "Set time",
+      "description": "Synchronize clocks on all bridges or a selected entry.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Config entry ID",
+          "description": "Config entry ID."
+        }
+      }
+    }
+  }
+}
