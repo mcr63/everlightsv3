@@ -1,0 +1,19 @@
+{
+  "domain": "everlights_v3",
+  "name": "EverLights v3 (Local)",
+  "codeowners": [
+    "@mcr63"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "frontend",
+    "panel_custom"
+  ],
+  "documentation": "https://github.com/mcr63/everlightsv3",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/mcr63/everlightsv3/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

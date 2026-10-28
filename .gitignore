@@ -3,3 +3,7 @@ __pycache__/
 .pytest_cache/
 .coverage
 .venv/
+
+ref/
+.ruff_cache/
+tools/panel/preview.html

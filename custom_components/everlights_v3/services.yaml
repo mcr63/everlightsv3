@@ -1,0 +1,194 @@
+{
+  "set_pattern": {
+    "name": "Set pattern",
+    "description": "Send colors and stacked effects to a zone.",
+    "target": {
+      "entity": {
+        "integration": "everlights_v3",
+        "domain": "light"
+      }
+    },
+    "fields": {
+      "colors": {
+        "name": "Colors",
+        "description": "Colors.",
+        "required": true,
+        "selector": {
+          "object": {}
+        }
+      },
+      "effects": {
+        "name": "Effects",
+        "description": "Effects.",
+        "required": false,
+        "selector": {
+          "object": {}
+        }
+      },
+      "brightness": {
+        "name": "Brightness",
+        "description": "Brightness.",
+        "required": false,
+        "selector": {
+          "number": {
+            "min": 0,
+            "max": 255,
+            "mode": "slider"
+          }
+        }
+      },
+      "alias": {
+        "name": "Alias",
+        "description": "Alias.",
+        "required": false,
+        "selector": {
+          "text": {}
+        }
+      }
+    }
+  },
+  "play_preset": {
+    "name": "Play preset",
+    "description": "Play a saved preset by alias or ID.",
+    "target": {
+      "entity": {
+        "integration": "everlights_v3",
+        "domain": "light"
+      }
+    },
+    "fields": {
+      "preset": {
+        "name": "Preset",
+        "description": "Preset.",
+        "required": true,
+        "selector": {
+          "text": {}
+        }
+      }
+    }
+  },
+  "save_preset": {
+    "name": "Save preset",
+    "description": "Create or update a named preset on the selected bridge.",
+    "target": {
+      "entity": {
+        "integration": "everlights_v3",
+        "domain": "light"
+      }
+    },
+    "fields": {
+      "name": {
+        "name": "Name",
+        "description": "Name.",
+        "required": true,
+        "selector": {
+          "text": {}
+        }
+      },
+      "colors": {
+        "name": "Colors",
+        "description": "Colors.",
+        "required": true,
+        "selector": {
+          "object": {}
+        }
+      },
+      "effects": {
+        "name": "Effects",
+        "description": "Effects.",
+        "required": false,
+        "selector": {
+          "object": {}
+        }
+      }
+    }
+  },
+  "delete_preset": {
+    "name": "Delete preset",
+    "description": "Delete a user preset from the selected bridge.",
+    "target": {
+      "entity": {
+        "integration": "everlights_v3",
+        "domain": "light"
+      }
+    },
+    "fields": {
+      "preset": {
+        "name": "Preset",
+        "description": "Preset.",
+        "required": true,
+        "selector": {
+          "text": {}
+        }
+      }
+    }
+  },
+  "start_playlist": {
+    "name": "Start playlist",
+    "description": "Play presets in order or shuffle.",
+    "target": {
+      "entity": {
+        "integration": "everlights_v3",
+        "domain": "light"
+      }
+    },
+    "fields": {
+      "presets": {
+        "name": "Presets",
+        "description": "Presets.",
+        "required": true,
+        "selector": {
+          "object": {}
+        }
+      },
+      "interval": {
+        "name": "Interval",
+        "description": "Interval.",
+        "required": false,
+        "selector": {
+          "number": {
+            "min": 5,
+            "max": 86400,
+            "unit_of_measurement": "s",
+            "mode": "box"
+          }
+        }
+      },
+      "shuffle": {
+        "name": "Shuffle",
+        "description": "Shuffle.",
+        "required": false,
+        "selector": {
+          "boolean": {}
+        }
+      }
+    }
+  },
+  "stop_playlist": {
+    "name": "Stop playlist",
+    "description": "Stop playback on a zone.",
+    "target": {
+      "entity": {
+        "integration": "everlights_v3",
+        "domain": "light"
+      }
+    },
+    "fields": {}
+  },
+  "set_time": {
+    "name": "Set time",
+    "description": "Synchronize clocks on all bridges or a selected entry.",
+    "fields": {
+      "config_entry_id": {
+        "name": "Config entry ID",
+        "description": "Config entry ID.",
+        "required": false,
+        "selector": {
+          "config_entry": {
+            "integration": "everlights_v3"
+          }
+        }
+      }
+    }
+  }
+}
